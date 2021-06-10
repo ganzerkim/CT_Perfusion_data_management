@@ -21,8 +21,11 @@ import seaborn as sns
 from medpy.io import save, load
 import dicom2nifti
 #%%
+folder_name = input('folder name :')
 path = 'C:/Users/User/Desktop/sample'
-base_path = 'C:/Users/User/Desktop/sample/Phase'
+
+base_path = 'C:/Users/User/Desktop/sample/Phase/' + str(folder_name) 
+images_path = path + '/' + str(folder_name) + '/'
 
 if not os.path.isdir(base_path):
         os.makedirs(base_path)
@@ -30,7 +33,6 @@ if not os.path.isdir(base_path):
 #%%
 #image example
 
-images_path = path + '/p/'
 images_list = [s for s in listdir(images_path) if isfile(join(images_path, s))]
 
 
@@ -42,7 +44,7 @@ for i in range(len(images_list)):
 
 plt.imshow(dcm_brain[10].pixel_array, cmap = 'bone')
 
-Acnum = dcm_brain[0].AcquisitionNumber - 1 #[0x0020, 0x0012] #다른 데이터 셋 통해서 확인 필요
+Acnum = dcm_brain[5].AcquisitionNumber - 1 #[0x0020, 0x0012] #다른 데이터 셋 통해서 확인 필요
 slices_num = len(dcm_brain) / Acnum
 
 i = 0
@@ -64,7 +66,7 @@ for i in range(int(Acnum)):
 
 
 
-
+'''
 import SimpleITK as sitk
 import dicom2nifti.settings as settings
 
@@ -110,8 +112,8 @@ for i in range(10):
 imgg = np.array(imgg)    
 
 def createMIP(np_img, slices_num = 15):
-    ''' create the mip image from original image, slice_num is the number of 
-    slices for maximum intensity projection'''
+     create the mip image from original image, slice_num is the number of 
+    slices for maximum intensity projection
     img_shape = np_img.shape
     np_mip = np.zeros(img_shape)
     for i in range(img_shape[0]):
@@ -120,3 +122,4 @@ def createMIP(np_img, slices_num = 15):
     return np_mip   
 
 zzz = createMIP(imgg, 10)
+'''

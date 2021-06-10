@@ -20,18 +20,20 @@ import SimpleITK as sitk
 
 import dicom2nifti
 import dicom2nifti.settings as settings
-#%%
 
-base_path = 'C:/Users/User/Desktop/sample/phase'
+import natsort
+#%%
+folder_name = input('folder name :')
+base_path = 'C:/Users/User/Desktop/sample/phase/' + str(folder_name)
 
         
-phase_s = input('start : ')
-phase_e = input('end : ')
+phase_s = input('start timepoint: ')
+phase_e = input('end timepoint: ')
 
 
 
-slice_path = 'C:/Users/User/Desktop/sample/slice_img'
-MIP_path = 'C:/Users/User/Desktop/sample/MIP'
+slice_path = 'C:/Users/User/Desktop/sample/slice_img/' + str(folder_name)
+MIP_path = 'C:/Users/User/Desktop/sample/MIP/' + str(folder_name)
 
 if not os.path.isdir(slice_path):
         os.makedirs(slice_path)
@@ -42,26 +44,31 @@ if not os.path.isdir(MIP_path):
 
 
 #%%        
+print("==================== Slice 별 이미지 나누는 중입니다! 잠시만 기다려주세요! ==========================")
 for i in range(int(phase_s), int(phase_e) + 1):
     temp_path = base_path + '/dcm' + str(i)
     
    
-    images_list = [s for s in listdir(temp_path) if isfile(join(temp_path, s))]
+    images_list = [s for s in natsort.natsorted(listdir(temp_path)) if isfile(join(temp_path, s))]
+    
     
     temp = []
     for idx in range(len(images_list)):
         print(idx)
         db = pydicom.dcmread(temp_path + '/' + images_list[idx], force = True)
+        temp.append(db)
         if not os.path.isdir(slice_path + '/' + str(idx)):
             os.makedirs(slice_path + '/' + str(idx))
         db.save_as(slice_path + '/' + str(idx) + '/' + str(i) + '.dcm')
-        
+print("================    Slice 별 이미지 나누기 성공!  ===============================")       
     #dicom2nifti.convert_directory(slice_path + '/' + str(idx), MIP_path + '/' + str(idx), reorient=True)  
         
         
 #%%
+print("=================================   MIP 영상 계산 준비중입니다!   ==================================")
 for cnt in range(len(images_list)):
-    slice_list = [s for s in listdir(slice_path + '/' + str(cnt)) if isfile(join(slice_path + '/' + str(cnt) , s))]
+    slice_list = [s for s in natsort.natsorted(listdir(slice_path + '/' + str(cnt))) if isfile(join(slice_path + '/' + str(cnt) , s))]
+  
     dcm_tmp = []
     for cntt in range(len(slice_list)):
         ddd = pydicom.dcmread(slice_path + '/' + str(cnt) + '/' + slice_list[cntt], force = True)
@@ -75,14 +82,32 @@ for cnt in range(len(images_list)):
         mip_final = np.maximum(mip_final, dcm_tmp[iii])
         
         print(iii)
+    
+    
     img = sitk.GetImageFromArray(mip_final)
     sitk.WriteImage(img, MIP_path + '/' + str(cnt) + ".dcm")
-        
+#%%
+if not os.path.isdir(MIP_path + '/MIP_Results'):
+        os.makedirs(MIP_path + '/MIP_Results')
+
+mip_list = [s for s in natsort.natsorted(listdir(MIP_path)) if isfile(join(MIP_path, s))]
+for mm in range(len(images_list)):
+ 
+    hdr_tmp = []
+    for mmm in range(len(mip_list)):
+        ddd = pydicom.dcmread(MIP_path + '/' + mip_list[mmm], force = True)
+        hdr_tmp.append(ddd)
+    hdr_p = hdr_tmp[mm]
     
+    #temp[mm].pixel_array = hdr_p.pixel_array
+    temp[mm].PixelData = hdr_p.PixelData
+    temp[mm].save_as(MIP_path + '/MIP_Results/' + str(mm) + '+hdr.dcm')
+  
+print("=========   MIP 영상 계산완료! MIP_Results 폴더안을 확인하세요!  =============")  
     
 #%%  
     
-    
+'''    
 settings.disable_validate_orthogonal()
 settings.enable_resampling()
 settings.set_resample_spline_interpolation_order(1)
@@ -90,8 +115,8 @@ settings.set_resample_padding(-1000)
 settings.disable_validate_slicecount()
         
 def createMIP(np_img, slices_num = 15):
-    ''' create the mip image from original image, slice_num is the number of 
-    slices for maximum intensity projection'''
+    create the mip image from original image, slice_num is the number of 
+    slices for maximum intensity projection
     img_shape = np_img.shape
     np_mip = np.zeros(img_shape)
     for i in range(img_shape[0]):
@@ -188,8 +213,4 @@ for ii in range(len(images_list)):
         mip_tmp.append(ddd.pixel_array)
         mip_tmp = np.array(mip_tmp)
         result = createMIP(mip_tmp, int(len(slice_list)))
-        
-   
-        
-
-
+'''
