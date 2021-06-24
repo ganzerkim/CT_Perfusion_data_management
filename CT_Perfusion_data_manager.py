@@ -22,7 +22,7 @@ import natsort
 #%%
 
 def phase_split(folder_name):
-    base_path = 'C:/Users/User/Desktop/sample/Phase/' + str(folder_name) 
+    base_path = path + '/Phase/' + str(folder_name) 
     images_path = path + '/' + str(folder_name) + '/'
 
     if not os.path.isdir(base_path):
@@ -61,13 +61,13 @@ def phase_split(folder_name):
 #%%
 
 def MIP_maker(folder_name):
-    base_path = 'C:/Users/User/Desktop/sample/phase/' + str(folder_name)
+    base_path = path + '/phase/' + str(folder_name)
 
     phase_s = input('start timepoint: ')
     phase_e = input('end timepoint: ')
 
-    slice_path = 'C:/Users/User/Desktop/sample/slice_img/' + str(folder_name)
-    MIP_path = 'C:/Users/User/Desktop/sample/MIP/' + str(folder_name)
+    slice_path = path + '/slice_img/' + str(folder_name)
+    MIP_path = path + '/MIP/' + str(folder_name)
 
     if not os.path.isdir(slice_path):
         os.makedirs(slice_path)
