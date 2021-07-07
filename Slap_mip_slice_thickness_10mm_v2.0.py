@@ -110,10 +110,13 @@ def slab_mip(folder_name, slab):
     mip_list = natsort.natsorted(listdir(MIP_path + '/temp/' + str(slab)))
 
     hdr_tmp = []
+    aa = temp_dcm[0].SeriesDescription
+    for hh in range(len(temp)):
+        temp_dcm[hh].SeriesDescription = str(aa) + '_slap-mip'
 
     for mm in range(len(mip_list)):
         dcm_list = [s for s in natsort.natsorted(listdir(MIP_path + '/temp/' + str(slab) + '/' + mip_list[mm])) if isfile(join(MIP_path + '/temp/' + str(slab) + '/' + mip_list[mm], s))]
-    
+               
         hdr_tmp = []
         for mmm in range(len(dcm_list)):
             ddd = pydicom.dcmread(MIP_path + '/temp/'  + str(slab) + '/' + mip_list[mm] + '/' + dcm_list[mmm], force = True)
@@ -123,8 +126,10 @@ def slab_mip(folder_name, slab):
             if not os.path.isdir(MIP_path + '/Results/slab-' + str(slab) + '/' + str(mm + 1)):
                 os.makedirs(MIP_path + '/Results/slab-' + str(slab) + '/' + str(mm + 1))
             
+            
             temp_dcm[mmm].PixelData = ddd.PixelData
             temp_dcm[mmm].StudyDescription = 'CT_Brain_Perfusion_slab-' + str(slab) + '_Phase' + str(mm + 1) + '_slice' + str(mmm + 1)
+            
             temp_dcm[mmm].save_as(MIP_path + '/Results/slab-' + str(slab) + '/' + str(mm + 1) + '/' + str(mmm + 1) + '.dcm')
     
     print("=========   MIP 영상 계산완료! MIP\Results 폴더안을 확인하세요!  =============")  
@@ -139,3 +144,4 @@ path = 'C:/Users/User/Desktop/' + bpath
 folder_name = input('Case folder name ? : ')
 Acnum = phase_split(folder_name)
 slab_mip(folder_name, 3)
+slab_mip(folder_name, 4)
