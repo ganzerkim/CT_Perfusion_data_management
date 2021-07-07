@@ -104,16 +104,9 @@ def MIP_maker(folder_name):
             #shape = np.shape(ddd.pixel_array)
             dcm_tmp.append(ddd.pixel_array)
     
-    
-        mip_final = dcm_tmp[0]    
-        for iii in range(len(dcm_tmp)):
-        
-            mip_final = np.maximum(mip_final, dcm_tmp[iii])
-        
-            print(iii)
-    
-    
-        img = sitk.GetImageFromArray(mip_final)
+        mipmax = np.array(dcm_tmp)
+        mipmax_final = np.amax(mipmax, axis = 0)
+        img = sitk.GetImageFromArray(mipmax_final)
         sitk.WriteImage(img, MIP_path + '/' + str(cnt) + ".dcm")
 
     if not os.path.isdir(MIP_path + '/MIP_Results'):
