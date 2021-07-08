@@ -22,6 +22,14 @@ import SimpleITK as sitk
 import natsort
 
 
+def iterated_index(list_of_elems, element):
+    iterated_index_list = []
+    for i in range(len(list_of_elems)):
+        if list_of_elems[i] == element:
+            iterated_index_list.append(i)
+    return iterated_index_list
+
+
 def phase_split(folder_name):
     base_path = path + '/Phase/' + str(folder_name) 
     images_path = path + '/source_data/' + str(folder_name) + '/'
@@ -36,9 +44,21 @@ def phase_split(folder_name):
         dcm_p = pydicom.dcmread(images_path + images_list[i], force = True)
         dcm_brain.append(dcm_p)
 
-    #plt.imshow(dcm_brain[10].pixel_array, cmap = 'bone')
 
-    Acnum = dcm_brain[5].AcquisitionNumber - 1 #[0x0020, 0x0012] #다른 데이터 셋 통해서 확인 필요
+    #plt.imshow(dcm_brain[10].pixel_array, cmap = 'bone')
+    
+    zloc = []
+    for i in range(len(images_list)):
+        print(i)
+        zloc.append(str(dcm_brain[i].ImagePositionPatient[2]))
+    
+    dd = iterated_index(zloc, zloc[0])
+    phase_num = dd[1] - dd[0]
+    Acnum = int(len(images_list) / phase_num)
+        
+    
+    #Acnum = dcm_brain[5].AcquisitionNumber - 1 #[0x0020, 0x0012] #다른 데이터 셋 통해서 확인 필요
+    
     slices_num = len(dcm_brain) / Acnum
 
     i = 0
@@ -145,4 +165,4 @@ path = 'C:/Users/User/Desktop/' + bpath
 folder_name = input('Case folder name ? : ')
 Acnum = phase_split(folder_name)
 slab_mip(folder_name, 3)
-slab_mip(folder_name, 4)
+#slab_mip(folder_name, 4)
