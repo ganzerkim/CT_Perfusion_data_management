@@ -132,7 +132,7 @@ def slab_mip(folder_name, slab):
             
             temp_dcm[mmm].PixelData = ddd.PixelData
             temp_dcm[mmm].StudyDescription = 'CT_Brain_Perfusion_slab-' + str(slab) + '_Phase' + str(mm + 1) + '_slice' + str(mmm + 1)
-            temp_dcm[mmm].SeriesNumber = str(mm + 1)
+            temp_dcm[mmm].SeriesNumber = str(slab * 10000 + (mm + 1))
             temp_dcm[mmm].save_as(MIP_path + '/Results/slab-' + str(slab) + '/' + str(mm + 1) + '/' + str(mmm + 1) + '.dcm')
     
     print("=========   MIP 영상 계산완료! MIP\Results 폴더안을 확인하세요!  =============")  
@@ -145,4 +145,4 @@ path = 'C:/Users/User/Desktop/' + bpath
 folder_name = input('Case folder name ? : ')
 Acnum = phase_split(folder_name)
 slab_mip(folder_name, 3)
-#slab_mip(folder_name, 4)
+slab_mip(folder_name, 4)
